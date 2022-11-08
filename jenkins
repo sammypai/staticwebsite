@@ -1,0 +1,29 @@
+pipeline {
+        agent  any
+
+        stages {
+        
+            stage ('Checkout SCM'){
+                steps {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/${branchName}']], extensions: [], userRemoteConfigs: [[credentialsId: '6e548b86-0b71-411a-9348-87c7d182b7fb', url: 'https://github.com/sammypai/staticwebsite.git']]])
+                }
+            }
+        
+            stage('terraform plan') {
+                steps {
+                        sh 'tfenv use 1.2.6'
+                        sh 'bin/terraform.sh -a $tfaction -p ddap -r eu-west-1 -e ${tfEnv} -c ${tfComponent}'
+                }
+            }
+
+        //     stage('terraform apply') {
+        //         steps {
+        //             dir('sockshop/aws/') {
+        //                 sh 'tfenv use 1.2.6'
+        //                 sh 'bin/terraform.sh -a apply -p academy -r eu-north-1 -e ${tfEnv} -c ${tfComponent}'
+        //             }
+        //         }
+        //     }
+        // }
+    }
+}
